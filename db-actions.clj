@@ -78,7 +78,7 @@
 (alter :add (table :file
                    (refer-to :directory)))
 
-(generate-migration 'add-file-directory)
+(lbc/generate-migration 'add-file-directory)
 ;; nu eerst fout, hij kent defmigration niet.
 ;; door goede dingen te use-n, werkt het wel.
 

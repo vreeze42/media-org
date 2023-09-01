@@ -36,6 +36,7 @@
 ;; (open-global dbspec)
 
 ;; (lbc/print-stash)
+;; (lbc/generate-migration 'add-file-directory)
 
 (defn surrogate-key [table]
   (lbs/integer table :id :auto-inc :primary-key))
@@ -79,7 +80,7 @@
   (lbc/alter :drop (lbs/table :file (refer-to :directory)))))
 
 ;; deze heeft geen down-migration, want hij snapt lbc/create niet.
-(defmigration
+(lbm/defmigration
  add-book-and-author
  (up
   []
@@ -110,3 +111,42 @@
     (refer-to :book)
     (refer-to :author)
     (lbs/text :notes)))))
+
+(lbm/defmigration
+ add-bookformat
+ (up
+  []
+  (lbc/create
+   (tbl
+    :bookformat
+    (refer-to :book)
+    (lbs/varchar :format 20)
+    (lbs/text :notes)))))
+
+(lbm/defmigration
+ add-relfile
+ (up
+  []
+  (lbc/create
+   (tbl
+    :relfile
+    (refer-to :bookformat)
+    (lbs/varchar :relpath 1023)
+    (lbs/varchar :relfolder 1023)
+    (lbs/varchar :filename 1023)
+    (lbs/integer :filesize)
+    (lbs/varchar :ts_cet 30)
+    (lbs/timestamp :ts :time-zone)
+    (lbs/varchar :md5 35)
+    (lbs/text :notes)))))
+
+(lbm/defmigration
+ add-file-relfile-ts
+ (up
+  []
+  (lbc/alter
+   :add
+   (lbs/table
+    :file
+    (refer-to :relfile)
+    (lbs/timestamp :ts :time-zone)))))
